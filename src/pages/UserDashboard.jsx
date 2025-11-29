@@ -25,10 +25,8 @@ export default function UserDashboard() {
   })
 
   useEffect(() => {
-    if (profile?.id) {
-      fetchData()
-    }
-  }, [activeTab, profile?.id])
+    fetchData()
+  }, [activeTab])
 
   const fetchData = async () => {
     setLoading(true)
@@ -42,14 +40,10 @@ export default function UserDashboard() {
         if (error) throw error
         setResources(data || [])
       } else if (activeTab === 'sessions') {
-        if (!profile?.id) {
-          console.error('Profile not loaded')
-          return
-        }
         const { data, error } = await supabase
           .from('sessions')
           .select('*')
-          .eq('student_id', profile.id)
+          .eq('student_id', profile?.id)
           .order('session_date', { ascending: false })
 
         if (error) throw error
@@ -73,44 +67,22 @@ export default function UserDashboard() {
   const handleScheduleSession = async (e) => {
     e.preventDefault()
     try {
-      // Convert datetime-local format to ISO string with timezone
-      // datetime-local gives format: "2025-12-19T07:59"
-      // We need to convert it to ISO format: "2025-12-19T07:59:00.000Z"
-      let sessionDate = sessionForm.session_date
-      if (sessionDate) {
-        // If the date doesn't have timezone info, create a Date object and convert to ISO
-        const dateObj = new Date(sessionDate)
-        if (isNaN(dateObj.getTime())) {
-          throw new Error('Invalid date format')
-        }
-        sessionDate = dateObj.toISOString()
-      }
-
-      if (!profile?.id) {
-        throw new Error('User profile not found. Please log in again.')
-      }
-
-      const { data, error } = await supabase.from('sessions').insert({
+      const { error } = await supabase.from('sessions').insert({
         student_id: profile.id,
         counselor_name: sessionForm.counselor_name,
-        session_date: sessionDate,
+        session_date: sessionForm.session_date,
         session_type: sessionForm.session_type,
         status: 'scheduled',
-      }).select()
+      })
 
-      if (error) {
-        console.error('Supabase error:', error)
-        throw error
-      }
+      if (error) throw error
 
       setShowSessionModal(false)
       setSessionForm({ counselor_name: '', session_date: '', session_type: 'individual' })
-      alert('Session scheduled successfully!')
       fetchData()
     } catch (error) {
       console.error('Error scheduling session:', error)
-      const errorMessage = error.message || error.details || 'Please try again.'
-      alert(`Error scheduling session: ${errorMessage}`)
+      alert('Error scheduling session. Please try again.')
     }
   }
 
