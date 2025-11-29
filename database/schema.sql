@@ -88,14 +88,17 @@ ALTER TABLE public.forum_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.forum_comments ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for profiles
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
 CREATE POLICY "Users can view their own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
 
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
 CREATE POLICY "Admins can view all profiles"
   ON public.profiles FOR SELECT
   USING (
@@ -106,10 +109,12 @@ CREATE POLICY "Admins can view all profiles"
   );
 
 -- RLS Policies for resources
+DROP POLICY IF EXISTS "Anyone can view resources" ON public.resources;
 CREATE POLICY "Anyone can view resources"
   ON public.resources FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admins can insert resources" ON public.resources;
 CREATE POLICY "Admins can insert resources"
   ON public.resources FOR INSERT
   WITH CHECK (
@@ -119,6 +124,7 @@ CREATE POLICY "Admins can insert resources"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can update resources" ON public.resources;
 CREATE POLICY "Admins can update resources"
   ON public.resources FOR UPDATE
   USING (
@@ -128,6 +134,7 @@ CREATE POLICY "Admins can update resources"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can delete resources" ON public.resources;
 CREATE POLICY "Admins can delete resources"
   ON public.resources FOR DELETE
   USING (
@@ -138,14 +145,17 @@ CREATE POLICY "Admins can delete resources"
   );
 
 -- RLS Policies for sessions
+DROP POLICY IF EXISTS "Users can view their own sessions" ON public.sessions;
 CREATE POLICY "Users can view their own sessions"
   ON public.sessions FOR SELECT
   USING (auth.uid() = student_id);
 
+DROP POLICY IF EXISTS "Users can create their own sessions" ON public.sessions;
 CREATE POLICY "Users can create their own sessions"
   ON public.sessions FOR INSERT
   WITH CHECK (auth.uid() = student_id);
 
+DROP POLICY IF EXISTS "Admins can view all sessions" ON public.sessions;
 CREATE POLICY "Admins can view all sessions"
   ON public.sessions FOR SELECT
   USING (
@@ -155,6 +165,7 @@ CREATE POLICY "Admins can view all sessions"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can update sessions" ON public.sessions;
 CREATE POLICY "Admins can update sessions"
   ON public.sessions FOR UPDATE
   USING (
@@ -165,10 +176,12 @@ CREATE POLICY "Admins can update sessions"
   );
 
 -- RLS Policies for support groups
+DROP POLICY IF EXISTS "Anyone can view support groups" ON public.support_groups;
 CREATE POLICY "Anyone can view support groups"
   ON public.support_groups FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admins can create support groups" ON public.support_groups;
 CREATE POLICY "Admins can create support groups"
   ON public.support_groups FOR INSERT
   WITH CHECK (
@@ -178,6 +191,7 @@ CREATE POLICY "Admins can create support groups"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can update support groups" ON public.support_groups;
 CREATE POLICY "Admins can update support groups"
   ON public.support_groups FOR UPDATE
   USING (
@@ -188,36 +202,44 @@ CREATE POLICY "Admins can update support groups"
   );
 
 -- RLS Policies for group members
+DROP POLICY IF EXISTS "Users can view group members" ON public.group_members;
 CREATE POLICY "Users can view group members"
   ON public.group_members FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can join groups" ON public.group_members;
 CREATE POLICY "Users can join groups"
   ON public.group_members FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can leave groups" ON public.group_members;
 CREATE POLICY "Users can leave groups"
   ON public.group_members FOR DELETE
   USING (auth.uid() = user_id);
 
 -- RLS Policies for forum posts
+DROP POLICY IF EXISTS "Users can view forum posts" ON public.forum_posts;
 CREATE POLICY "Users can view forum posts"
   ON public.forum_posts FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can create forum posts" ON public.forum_posts;
 CREATE POLICY "Users can create forum posts"
   ON public.forum_posts FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update their own posts" ON public.forum_posts;
 CREATE POLICY "Users can update their own posts"
   ON public.forum_posts FOR UPDATE
   USING (auth.uid() = user_id);
 
 -- RLS Policies for forum comments
+DROP POLICY IF EXISTS "Users can view forum comments" ON public.forum_comments;
 CREATE POLICY "Users can view forum comments"
   ON public.forum_comments FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can create forum comments" ON public.forum_comments;
 CREATE POLICY "Users can create forum comments"
   ON public.forum_comments FOR INSERT
   WITH CHECK (auth.uid() = user_id);
